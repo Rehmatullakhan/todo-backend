@@ -8,7 +8,7 @@ const app = express();
 
 app.use(express.json());
 app.use(cors({
-origin:['http://localhost:5173','https://todo-backend-production-ea20.up.railway.app'],
+origin:['http://localhost:5173','https://todo-frontend-eight-mu.vercel.app'],
 credentials:true
 }));
 app.use(cookieParser());
