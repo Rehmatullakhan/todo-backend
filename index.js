@@ -15,7 +15,7 @@ app.use(cookieParser());
 
 
 function verifyJWTToken(req,resp,next){
-const token= req.cookies('token',token,{
+let token= req.cookies('token',token,{
 httpOnly:true,
 sameSite:'none',
 secure:true,
