@@ -15,7 +15,12 @@ app.use(cookieParser());
 
 
 function verifyJWTToken(req,resp,next){
-const token= req.cookies['token'];
+const token= req.cookies('token',token,{
+httpOnly:true,
+sameSite:'none',
+secure:true,
+maxAge:7*24*60*60*1000
+});
 jwt.verify(token,'Google', (error, decoded)=>{
   if(error){
     resp.send({
