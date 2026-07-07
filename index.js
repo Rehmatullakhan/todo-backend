@@ -32,6 +32,7 @@ jwt.verify(token,'Google', (error, decoded)=>{
     })
   }
   console.log("decoded" ,decoded);
+  req.userData=decoded;
   next();
 })
 }
