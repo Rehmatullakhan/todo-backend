@@ -21,6 +21,9 @@ sameSite:'none',
 secure:true,
 maxAge:7*24*60*60*1000
 });
+if(!token){
+  return resp.status(401).send({message:"No token",success:false})
+}
 jwt.verify(token,'Google', (error, decoded)=>{
   if(error){
     resp.send({
