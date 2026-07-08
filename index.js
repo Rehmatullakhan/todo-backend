@@ -37,20 +37,28 @@ app.use(cookieParser());
 // })
 // }
 
-const verifyJWTToken=(req,resp,next)=>{
-  console.log(req);
-  const token = req.cookies.token;
-  if(!token){
-    return resp.status(401).send({message:"Unauthorized"})
-  }
-  try {
-    const decoded= jwt.verify(token,process.env.JWT_SECRET);
-    req.userData=decoded;
-    next();
-  } catch (error) {
-    return resp.status(401).send({message:"Invalid Token"})
-  }
+function verifyJWTToken(req, resp, next){
+    // 1. Cookie se token nikalo
+    let token = req.cookies.token; 
+    
+    // 2. Token hai hi nahi
+    if(!token){
+        return resp.status(401).send({message: "No token, Please login", success: false})
+    }
+    
+    // 3. Token verify karo
+    jwt.verify(token, 'Google', (error, decoded) => {
+        if(error){
+            return resp.status(401).send({message: 'Invalid token', success: false})
+        }
+        
+        // 4. User ki id req me save kar do taake /tasks me use ho
+        req.userData = decoded; 
+        next(); // aage jao
+    })
 }
+
+
 export default verifyJWTToken;
 
 app.post("/add",verifyJWTToken, async (req, resp) => {
