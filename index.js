@@ -159,35 +159,78 @@ app.post("/signup", async (req, resp) => {
   console.log(userData);
 });
 
+// app.post("/login", async (req, resp) => {
+//   const userData = req.body;
+//   console.log(userData);
+//   if (userData.email && userData.password) {
+//     const db = await connection();
+//     const collection = await db.collection("users");
+//     const result = await collection.findOne({email:userData.email,password:userData.password});
+//     if (result) {
+//       jwt.sign(userData, "Google", { expiresIn: "5d" }, (error, token) => {
+//         resp.send({
+//           success: true,
+//           message: "login done",
+//           token,
+//         });
+//       });
+//     } else {
+//       resp.send({
+//         success: false,
+//         message: "user not found",
+//       });
+//     }
+//   }else{
+//      resp.send({
+//         success: false,
+//         message: "login not done",
+//       });
+//   }
+
+
+// });
+
 app.post("/login", async (req, resp) => {
-  const userData = req.body;
-  console.log(userData);
-  if (userData.email && userData.password) {
-    const db = await connection();
-    const collection = await db.collection("users");
-    const result = await collection.findOne({email:userData.email,password:userData.password});
-    if (result) {
-      jwt.sign(userData, "Google", { expiresIn: "5d" }, (error, token) => {
+    const userData = req.body;
+    console.log(userData);
+    if (userData.email && userData.password) {
+        const db = await connection();
+        const collection = await db.collection("users");
+        const result = await collection.findOne({email:userData.email,password:userData.password});
+        
+        if (result) {
+            jwt.sign({id: result._id}, "Google", { expiresIn: "5d" }, (error, token) => { // <-- yahan result._id bhejo, pura userData nahi
+                if(error){
+                    return resp.send({success: false, message: "Token error"})
+                }
+
+                // YE 4 LINE YAHAN ADD KARO - resp.send se pehle
+                resp.cookie('token', token, {
+                    httpOnly: true,
+                    sameSite: 'none', // Vercel -> Railway ke liye
+                    secure: true, // https hai
+                    maxAge: 5*24*60*60*1000 // 5 din = expiresIn se match
+                });
+
+                resp.send({
+                    success: true,
+                    message: "login done",
+                    // token yahan se hata do, cookie me ja raha hai
+                });
+            });
+        } else {
+            resp.send({
+                success: false,
+                message: "user not found",
+            });
+        }
+    }else{
         resp.send({
-          success: true,
-          message: "login done",
-          token,
+            success: false,
+            message: "login not done",
         });
-      });
-    } else {
-      resp.send({
-        success: false,
-        message: "user not found",
-      });
     }
-  }else{
-     resp.send({
-        success: false,
-        message: "login not done",
-      });
-  }
-
-
 });
+
 
 app.listen(3200);
