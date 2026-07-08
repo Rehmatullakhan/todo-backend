@@ -8,7 +8,7 @@ const app = express();
 
 app.use(express.json());
 app.use(cors({
-origin:['http://localhost:5173','https://todo-frontend-eight-mu.vercel.app'],
+origin:['https://todo-frontend-eight-mu.vercel.app'],
 credentials:true
 }));
 app.use(cookieParser());
@@ -37,7 +37,7 @@ jwt.verify(token,'Google', (error, decoded)=>{
 })
 }
 
-app.post("/add",verifyJWTToken, async (req, resp) => {
+app.post("/add", async (req, resp) => {
   const db = await connection();
   const collection = await db.collection(collectionName);
   const result = await collection.insertOne(req.body);
@@ -48,7 +48,7 @@ app.post("/add",verifyJWTToken, async (req, resp) => {
   }
 });
 
-app.get("/tasks",verifyJWTToken, async (req, resp) => {
+app.get("/tasks", async (req, resp) => {
   const db = await connection();
   console.log("cookies test", req.cookies['token']);
   const collection = await db.collection(collectionName);
