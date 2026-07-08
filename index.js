@@ -53,7 +53,7 @@ const verifyJWTToken=(req,resp,next)=>{
 }
 export default verifyJWTToken;
 
-app.post("/add", async (req, resp) => {
+app.post("/add",verifyJWTToken, async (req, resp) => {
   const db = await connection();
   const collection = await db.collection(collectionName);
   const result = await collection.insertOne(req.body);
@@ -64,7 +64,7 @@ app.post("/add", async (req, resp) => {
   }
 });
 
-app.get("/tasks", async (req, resp) => {
+app.get("/tasks",verifyJWTToken, async (req, resp) => {
   const db = await connection();
  // console.log("cookies test", req.cookies['token']);
   const collection = await db.collection(collectionName);
