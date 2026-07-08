@@ -64,7 +64,7 @@ app.post("/add",verifyJWTToken, async (req, resp) => {
   }
 });
 
-app.get("/tasks",verifyJWTToken, async (req, resp) => {
+app.get("/tasks", async (req, resp) => {
   const db = await connection();
  // console.log("cookies test", req.cookies['token']);
   const collection = await db.collection(collectionName);
