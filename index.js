@@ -14,28 +14,44 @@ credentials:true
 app.use(cookieParser());
 
 
-function verifyJWTToken(req,resp,next){
-let token= req.cookies('token',token,{
-httpOnly:true,
-sameSite:'none',
-secure:true,
-maxAge:7*24*60*60*1000
-});
-if(!token){
-  return resp.status(401).send({message:"No token",success:false})
-}
-jwt.verify(token,'Google', (error, decoded)=>{
-  if(error){
-    resp.send({
-      message: 'invalid token',
-      success:false
-    })
+// function verifyJWTToken(req,resp,next){
+// const token= req.cookies('token',token,{
+// httpOnly:true,
+// sameSite:'none',
+// secure:true,
+// maxAge:7*24*60*60*1000
+// });
+// if(!token){
+//   return resp.status(401).send({message:"No token",success:false})
+// }
+// jwt.verify(token,'Google', (error, decoded)=>{
+//   if(error){
+//     resp.send({
+//       message: 'invalid token',
+//       success:false
+//     })
+//   }
+//   console.log("decoded" ,decoded);
+//   req.userData=decoded;
+//   next();
+// })
+// }
+
+const verifyJWTToken=(req,resp,next)=>{
+  console.log(req);
+  const token = req.cookies.token;
+  if(!token){
+    return resp.status(401).send({message:"Unauthorized"})
   }
-  console.log("decoded" ,decoded);
-  req.userData=decoded;
-  next();
-})
+  try {
+    const decoded= jwt.verify(token,process.env.JWT_SECRET);
+    req.user=decoded;
+    next();
+  } catch (error) {
+    return resp.status(401).send({message:"Invalid Token"})
+  }
 }
+export default verifyJWTToken;
 
 app.post("/add", async (req, resp) => {
   const db = await connection();
@@ -50,7 +66,7 @@ app.post("/add", async (req, resp) => {
 
 app.get("/tasks", async (req, resp) => {
   const db = await connection();
-  console.log("cookies test", req.cookies['token']);
+ // console.log("cookies test", req.cookies['token']);
   const collection = await db.collection(collectionName);
   const result = await collection.find().toArray();
   if (result) {
