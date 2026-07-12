@@ -147,18 +147,6 @@ app.post("/signup", async (req, resp) => {
   if (userData.email && userData.password) {
     const db = await connection();
     const collection = await db.collection("users");
-const existingUser= await collection.findOne({email:email});
-if(existingUser){
-  return resp.send({
-    message:"Already registered email, please make login",
-success:false    
-
-  });
-}
-
-const hashedPassword = await bcrypt.hash(userData.password,10);
-
-
     const result = await collection.insertOne(userData);
     if (result) {
       jwt.sign(userData, "Google", { expiresIn: "5d" }, (error, token) => {
